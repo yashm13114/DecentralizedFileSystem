@@ -4,6 +4,10 @@ import { ethers } from "ethers";
 import FileUpload from "./components/FileUpload";
 import Display from "./components/Display";
 import Modal from "./components/Modal";
+import {
+  Ripple,
+  initTE,
+} from "tw-elements";
 import "./App.css";
 
 function App() {
@@ -13,7 +17,8 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    // const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const provider = ((window.ethereum != null) ? new ethers.providers.Web3Provider(window.ethereum) : ethers.providers.getDefaultProvider());
 
     const loadProvider = async () => {
       if (provider) {
@@ -28,14 +33,14 @@ function App() {
         const signer = provider.getSigner();
         const address = await signer.getAddress();
         setAccount(address);
-        let contractAddress = "Your Contract Address Here";
+        let contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
         const contract = new ethers.Contract(
           contractAddress,
           Upload.abi,
           signer
         );
-        //console.log(contract);
+        console.log(contract);
         setContract(contract);
         setProvider(provider);
       } else {
@@ -46,31 +51,39 @@ function App() {
   }, []);
   return (
     <>
+      {" "}
       {!modalOpen && (
-        <button className="share" onClick={() => setModalOpen(true)}>
-          Share
-        </button>
-      )}
+        
+        <button
+        type="button"
+        onClick={() => setModalOpen(true)}
+        data-te-ripple-init
+        data-te-ripple-color="light"
+        className="border-0 -z-1 p-4 mt-2  bg-gradient-to-r from-red-400 to-red-500 w-16 h-12 text-white rounded drop-shadow-lg hover:drop-shadow-xl text-xs shadow-[0 8px 16px 0_rgba(0, 0, 0, 0.2]">
+         Share{" "}
+      </button>
+        
+      )}{" "}
       {modalOpen && (
-        <Modal setModalOpen={setModalOpen} contract={contract}></Modal>
-      )}
-
+        <Modal setModalOpen={setModalOpen} contract={contract}>
+          {" "}
+        </Modal>
+      )}{" "}
       <div className="App">
-        <h1 style={{ color: "white" }}>Gdrive 3.0</h1>
-        <div class="bg"></div>
-        <div class="bg bg2"></div>
-        <div class="bg bg3"></div>
-
+        <h1 style={{ color: "white" }}> Decentralized File System </h1> <div class="bg"> </div>{" "}
+        <div class="bg bg2"> </div> <div class="bg bg3"> </div>
         <p style={{ color: "white" }}>
-          Account : {account ? account : "Not connected"}
-        </p>
+          Account: {account ? account : "Not connected"}{" "}
+        </p>{" "}
         <FileUpload
           account={account}
           provider={provider}
           contract={contract}
-        ></FileUpload>
-        <Display contract={contract} account={account}></Display>
-      </div>
+        ></FileUpload>{" "}
+        <Display contract={contract} account={account}>
+          {" "}
+        </Display>{" "}
+      </div>{" "}
     </>
   );
 }
